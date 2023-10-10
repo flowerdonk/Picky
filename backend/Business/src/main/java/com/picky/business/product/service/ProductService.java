@@ -50,7 +50,7 @@ public class ProductService {
             String productName, String category,
             List<Integer> price, List<Integer> carb,
             List<Integer> protein, List<Integer> fat, List<Integer> sodium,
-            List<Integer> inputPromotionCode, List<Integer> inputConvenienceCode,
+            List<Integer> inputConvenienceCode, List<Integer> inputPromotionCode,
             String accessToken
     ) {
         int[] defaultRange = {0, Integer.MAX_VALUE};
@@ -85,15 +85,9 @@ public class ProductService {
                             .map(id -> favoriteRepository.findByUserIdAndProductId(id, product.getId()) != null)
                             .orElse(null);
 
-                    List<Integer> convenienceCodes = product.getConvenienceInfos()
-                            .stream()
-                            .map(ConvenienceInfo::getConvenienceCode)
-                            .collect(Collectors.toList());
+                    List<Integer> convenienceCodes = getConvenienceCodes(product);
 
-                    List<Integer> promotionCodes = product.getConvenienceInfos()
-                            .stream()
-                            .map(ConvenienceInfo::getPromotionCode)
-                            .collect(Collectors.toList());
+                    List<Integer> promotionCodes = getPromotionCodes(product);
 
                     return ProductPreviewResponse.builder()
                             .productId(product.getId())

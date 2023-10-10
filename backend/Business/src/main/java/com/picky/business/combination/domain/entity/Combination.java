@@ -5,7 +5,6 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 @ToString
 public class Combination {
     @Id
@@ -36,6 +36,6 @@ public class Combination {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "combination", cascade = CascadeType.ALL)
-    private List<CombinationItem> items = new ArrayList<>();
+    private List<CombinationItem> items;
 
 }
