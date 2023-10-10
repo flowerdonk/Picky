@@ -6,14 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:frontend/models/user.dart';
 
 class MyPage extends StatelessWidget {
+  final String? fcmtoken;
+  const MyPage({super.key, required this.fcmtoken});
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<User>();
-    String? token;
-    FirebaseMessaging.instance.getToken().then((value) {
-      token = value;
-    });
+
     return Scaffold(
       appBar: TopBarSub(appBar: AppBar()),
       body: SingleChildScrollView(
@@ -29,8 +28,9 @@ class MyPage extends StatelessWidget {
                 ),
                 SizedBox(height: 50,),
                 Text('아이디: ${user.nickname}'),
-
-                TextFormField(initialValue: token),
+                SizedBox(height: 20,),
+                Text('FCM 토큰'),
+                TextFormField(initialValue: fcmtoken),
                 SizedBox(height: 100,),
                 FilledButton(
                     onPressed: () {

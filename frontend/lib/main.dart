@@ -138,7 +138,7 @@ final goRouter = GoRouter(
       path: '/mypage',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (BuildContext context, GoRouterState state) {
-        return MyPage();
+        return MyPage(fcmtoken: fcmtoken);
       },
     )
 
@@ -226,7 +226,7 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
     );
   }
 }
-
+String? fcmtoken = '';
 void main() async {
   // turn off the # in the URLs on the web
   // usePathUrlStrategy();
@@ -264,8 +264,8 @@ void main() async {
     badge: true,
     sound: true,
   );
-  // var token = await FirebaseMessaging.instance.getToken();
-  // print("token : ${token ?? 'token NULL!'}");
+  // fcmtoken = await FirebaseMessaging.instance.getToken();
+  // print("token : ${fcmtoken ?? 'token NULL!'}");
   runApp(const MyApp());
 }
 
@@ -328,7 +328,7 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
           useMaterial3: true,
         ),
-        debugShowCheckedModeBanner: true,
+        debugShowCheckedModeBanner: false,
         routerConfig: goRouter,
       ),
     );
