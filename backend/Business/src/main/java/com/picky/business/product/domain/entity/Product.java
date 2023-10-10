@@ -1,10 +1,13 @@
 package com.picky.business.product.domain.entity;
 
+import com.picky.business.favorite.domain.entity.Favorite;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.*;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +29,7 @@ public class Product {
     @Column
     private String filename;
     @Column
-    private String badge;
-    @Column
     private int category;
-    @Column
-    private int favoriteCount;
     @Column
     private int weight;
     @Column
@@ -46,21 +45,27 @@ public class Product {
     @Column(columnDefinition = "boolean default false")
     private Boolean isDeleted = false;
 
-    @Column
-    private int convenienceCode;
+    @OneToMany(mappedBy = "product")
+    private List<ConvenienceInfo> convenienceInfos;
+
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
-        public static Specification<Product> filterProducts(
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<Favorite> favorites;
+
+    public static Specification<Product> filterProducts(
             String productName,
             String category,
             int minPrice, int maxPrice,
             int minCarb, int maxCarb,
             int minProtein, int maxProtein,
             int minFat, int maxFat,
-            int minSodium, int maxSodium) {
-
+            int minSodium, int maxSodium,
+            List<Integer> convenienceCodes,
+            List<Integer> promotionCodes
+    ) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -76,7 +81,19 @@ public class Product {
             predicates.add(criteriaBuilder.between(root.get("protein"), minProtein, maxProtein));
             predicates.add(criteriaBuilder.between(root.get("fat"), minFat, maxFat));
             predicates.add(criteriaBuilder.between(root.get("sodium"), minSodium, maxSodium));
+
+            addListFilter(predicates, root, "convenienceCodes", "convenienceCode", convenienceCodes);
+            addListFilter(predicates, root, "promotionCodes", "promotionCode", promotionCodes);
+
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static <T> void addListFilter(List<Predicate> predicates, Root<Product> root, String joinField, String filterField, List<Integer> list) {
+        if (list != null && !list.isEmpty()) {
+            Join<Product, T> join = root.join(joinField);
+            predicates.add(join.get(filterField).in(list));
+        }
     }
 }
